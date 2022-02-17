@@ -1,11 +1,11 @@
 {
   "name": "kalder",
   "private": true,
+  "type": "module",
   "scripts": {
-    "dev": "next dev",
+    "dev": "node server.js",
     "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
+    "start": "NODE_ENV=production node server.js"
   },
   "dependencies": {
     "@chakra-ui/react": "^1.8.3",
@@ -14,6 +14,8 @@
     "@openzeppelin/contracts": "^4.5.0",
     "dotenv": "^16.0.0",
     "framer-motion": "^6",
+    "koa": "^2.13.4",
+    "koa-router": "^10.1.1",
     "next": "^12.0.10",
     "react": "17.0.2",
     "react-dom": "17.0.2"
@@ -22,9 +24,13 @@
     "@nomiclabs/hardhat-ethers": "^2.0.5",
     "@nomiclabs/hardhat-etherscan": "^3.0.1",
     "@nomiclabs/hardhat-waffle": "^2.0.2",
+    "@shopify/koa-shopify-auth": "^4.1.5",
+    "@shopify/shopify-api": "^2.1.0",
     "@typechain/ethers-v5": "^9.0.0",
     "@typechain/hardhat": "^4.0.0",
     "@types/jest": "^27.4.0",
+    "@types/koa": "^2.13.4",
+    "@types/koa-router": "^7.4.4",
     "@types/node": "17.0.18",
     "@types/react": "17.0.39",
     "eslint": "8.9.0",
@@ -33,6 +39,7 @@
     "hardhat": "^2.8.4",
     "hardhat-ethers": "^1.0.1",
     "hardhat-gas-reporter": "^1.0.8",
+    "nodemon": "^2.0.15",
     "solidity-coverage": "^0.7.20",
     "ts-node": "^10.5.0",
     "typechain": "^7.0.0",

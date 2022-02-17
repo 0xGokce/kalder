@@ -17,7 +17,7 @@
     "isolatedModules": true,
     "jsx": "preserve"
   },
-  "include": ["./scripts", "./test", "./typechain"],
+  "include": ["./scripts", "./test", "./typechain", "server.js"],
   "files": ["./hardhat.config.ts"],
   "exclude": ["node_modules"]
 }
