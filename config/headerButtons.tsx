@@ -4,15 +4,15 @@ import React from "react";
 
 const headerButtons = [
   {
-    label: "Explore",
+    label: "Manifesto",
     path: "/explore",
   },
   {
-    label: "Launch a Token",
+    label: "Careers",
     path: "/launchtoken",
   },
   {
-    label: "Create a Membership",
+    label: "Brands",
     path: "/createmembership",
   },
   {
@@ -20,8 +20,12 @@ const headerButtons = [
     path: "/manifesto",
   },
   {
+    label: "Log In",
+    path: "/login",
+  },
+  {
     label: "Sign In",
-    path: "/signin",
+    path: "/signup",
   },
 ];
 

@@ -1,9 +1,13 @@
-// components/Header.js
+// components/Header.tsx
 
 import HeaderButton from "./HeaderButton";
 
+import { useUser } from '../lib/hooks';
+
 import styles from "../styles/Header.module.scss";
   
+  const user = useUser();
+
   type HeaderProps = {
     appTitle: string;
     headerButtons: HeaderButton[];
@@ -13,13 +17,20 @@ import styles from "../styles/Header.module.scss";
     <div className={styles.Header}>
       <div className={styles.title}>{props.appTitle}</div>
       <div className="search"></div>
-      {props.headerButtons.map(button => (
-      <HeaderButton 
-        key={button.path}
-        path={button.path}
-        label={button.label}
-      />
-    ))}<div className={styles.join}>Join</div>
+      {user ? <>
+      ({props.headerButtons.map(button => (
+        <HeaderButton 
+          path={button.path}
+          label={button.label}
+        />
+      ))}) </> : <>
+      ({props.headerButtons.map(button => (
+        <HeaderButton 
+          path={button.path}
+          label={button.label}
+        />
+      ))}) </>
+    }
     </div>
   );
   
@@ -27,3 +38,7 @@ import styles from "../styles/Header.module.scss";
 
   // components/NavBar.tsx
 
+
+
+
+        
