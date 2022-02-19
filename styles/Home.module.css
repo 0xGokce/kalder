@@ -2,6 +2,10 @@
   padding: 0 2rem;
 }
 
+.signincontainer {
+  background-color: black;
+}
+
 .main {
   min-height: 100vh;
   padding: 4rem 0;
@@ -69,7 +73,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-wrap: wrap;
   max-width: 800px;
 }
 
