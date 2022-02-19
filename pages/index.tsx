@@ -2,7 +2,7 @@ import type { NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
 
-import { Box, Button, Container, Grid, Heading, Text } from "@chakra-ui/react";
+import { Box, Button, Container, Grid, Heading, Text, Link } from "@chakra-ui/react";
 
 import kalderHero from "../public/kalder-hero.png";
 import kalderMobile from "../public/kalder-mobile.png";
@@ -35,7 +35,7 @@ const Home: NextPage = () => {
         <Button>Manifesto</Button>
         <Button>About</Button>
         <Box flex={1} />
-        <Button>Log In</Button>
+        <Button><Link href='login'>Log In</Link></Button>
         <Button>Sign Up</Button>
       </Box>
       <Container maxW="6xl">
