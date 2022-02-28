@@ -2,43 +2,42 @@
 
 import HeaderButton from "./HeaderButton";
 
-import { useUser } from '../lib/hooks';
+import { useUser } from "../lib/hooks";
 
 import styles from "../styles/Header.module.scss";
-  
+
+type HeaderProps = {
+  appTitle: string;
+  headerButtons: HeaderButton[];
+};
+
+const Header = (props: HeaderProps) => {
   const user = useUser();
-
-  type HeaderProps = {
-    appTitle: string;
-    headerButtons: HeaderButton[];
-  };
-
-  const Header = (props: HeaderProps) => (
+  return (
     <div className={styles.Header}>
       <div className={styles.title}>{props.appTitle}</div>
       <div className="search"></div>
-      {user ? <>
-      ({props.headerButtons.map(button => (
-        <HeaderButton 
-          path={button.path}
-          label={button.label}
-        />
-      ))}) </> : <>
-      ({props.headerButtons.map(button => (
-        <HeaderButton 
-          path={button.path}
-          label={button.label}
-        />
-      ))}) </>
-    }
+      {user ? (
+        <>
+          (
+          {props.headerButtons.map((button) => (
+            <HeaderButton path={button.path} label={button.label} />
+          ))}
+          ){" "}
+        </>
+      ) : (
+        <>
+          (
+          {props.headerButtons.map((button) => (
+            <HeaderButton path={button.path} label={button.label} />
+          ))}
+          ){" "}
+        </>
+      )}
     </div>
   );
-  
-  export default Header;
+};
 
-  // components/NavBar.tsx
+export default Header;
 
-
-
-
-        
+// components/NavBar.tsx
