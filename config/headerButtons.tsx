@@ -1,7 +1,5 @@
 // config/headerButtons.tsx
 
-import React from "react";
-
 const headerButtons = [
   {
     label: "Manifesto",
@@ -19,14 +17,6 @@ const headerButtons = [
     label: "Manifesto",
     path: "/manifesto",
   },
-  {
-    label: "Log In",
-    path: "/login",
-  },
-  {
-    label: "Sign In",
-    path: "/signup",
-  },
 ];
 
-export default headerButtons
+export default headerButtons;
