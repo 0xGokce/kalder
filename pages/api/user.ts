@@ -1,17 +1,15 @@
+import { getLoginSession } from "@/lib/auth";
 import { NextApiHandler } from "next";
 
-const user: NextApiHandler = (req, res) => {
-  return res.status(200).send(null);
-  /**
-   * Uncomment the below if you want a fake test user
-   */
+const user: NextApiHandler = async (req, res) => {
+  try {
+    if (!req.cookies.token) return res.json({ user: null });
 
-  // return res.status(200).send({
-  //   user: {
-  //     userName: "Test User 1",
-  //     walletAddress: "0xabcdefghijklmnopqrstuvxywz",
-  //   },
-  // });
+    const user = await getLoginSession(req);
+    res.status(200).json({ user });
+  } catch (error) {
+    res.status(200).json({ user: null });
+  }
 };
 
 export default user;

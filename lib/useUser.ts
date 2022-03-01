@@ -10,8 +10,10 @@ const fetcher = (url: string) =>
     });
 
 export type User = {
-  userName: string;
-  walletAddress: string;
+  issuer: string;
+  publicAddress: string;
+  email: string;
+  createdAt: number;
 };
 
 export function useUser(

@@ -1,8 +1,9 @@
 import { LoginForm } from "@/components/LoginForm";
 import { magicConnector } from "@/lib/magicConnector";
+
 import Router from "next/router";
 import { FormEvent, useCallback, useState } from "react";
-import { useUser } from "../lib/hooks";
+import { useUser } from "../lib/useUser";
 
 export default function Login() {
   const user = useUser({ redirectTo: "/", redirectIfFound: true });

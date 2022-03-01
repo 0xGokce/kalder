@@ -1,4 +1,4 @@
-import { useUser } from "../lib/hooks";
+import { useUser } from "../lib/useUser";
 import HeaderButton from "./HeaderButton";
 
 /**
@@ -11,7 +11,7 @@ export default function SessionButton() {
   if (user) {
     return (
       <div>
-        <p>{user.userName}</p>
+        <p>{user.publicAddress}</p>
       </div>
     );
   } else {
