@@ -1,6 +1,6 @@
 import { NextApiHandler } from "next";
 
-const login: NextApiHandler = (req, res) => {
+const user: NextApiHandler = (req, res) => {
   return res.status(200).send(null);
   /**
    * Uncomment the below if you want a fake test user
@@ -14,4 +14,4 @@ const login: NextApiHandler = (req, res) => {
   // });
 };
 
-export default login;
+export default user;

@@ -1,15 +1,15 @@
-import { Magic } from "magic-sdk";
+import { LoginForm } from "@/components/LoginForm";
+import { magicConnector } from "@/lib/magicConnector";
 import Router from "next/router";
-import { useState } from "react";
-import Form from "../components/form";
+import { FormEvent, useCallback, useState } from "react";
 import { useUser } from "../lib/hooks";
 
-const Login = () => {
-  useUser({ redirectTo: "/", redirectIfFound: true });
+export default function Login() {
+  const user = useUser({ redirectTo: "/", redirectIfFound: true });
 
   const [errorMsg, setErrorMsg] = useState("");
 
-  async function handleSubmit(e) {
+  const handleSubmit = useCallback(async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (errorMsg) setErrorMsg("");
@@ -19,10 +19,16 @@ const Login = () => {
     };
 
     try {
-      const magic = new Magic(process.env.NEXT_PUBLIC_MAGIC_PUBLISHABLE_KEY);
-      const didToken = await magic.auth.loginWithMagicLink({
+      const [connector] = magicConnector;
+      const didToken = await connector.activate({
         email: body.email,
+        showUI: true,
       });
+
+      if (!didToken) {
+        throw new Error("Error logging in");
+      }
+
       const res = await fetch("/api/login", {
         method: "POST",
         headers: {
@@ -38,14 +44,14 @@ const Login = () => {
       }
     } catch (error) {
       console.error("An unexpected error happened occurred:", error);
-      setErrorMsg(error.message);
+      setErrorMsg((error as any).message);
     }
-  }
+  }, []);
 
   return (
     <div>
       <div className="login">
-        <Form errorMessage={errorMsg} onSubmit={handleSubmit} />
+        <LoginForm errorMessage={errorMsg} onSubmit={handleSubmit} />
       </div>
       <style jsx>{`
         .login {
@@ -58,6 +64,4 @@ const Login = () => {
       `}</style>
     </div>
   );
-};
-
-export default Login;
+}

@@ -15,6 +15,6 @@ export default function SessionButton() {
       </div>
     );
   } else {
-    return <HeaderButton path="/logIn" label="Log In"></HeaderButton>;
+    return <HeaderButton path="/login" label="Log In"></HeaderButton>;
   }
 }
