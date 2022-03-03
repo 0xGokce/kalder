@@ -5,9 +5,9 @@
 import { Contract, Signer, utils } from "ethers";
 import { Provider } from "@ethersproject/providers";
 import type {
-  ERC721URIStorage,
-  ERC721URIStorageInterface,
-} from "../ERC721URIStorage";
+  ERC721Enumerable,
+  ERC721EnumerableInterface,
+} from "../ERC721Enumerable";
 
 const _abi = [
   {
@@ -302,6 +302,49 @@ const _abi = [
     inputs: [
       {
         internalType: "uint256",
+        name: "index",
+        type: "uint256",
+      },
+    ],
+    name: "tokenByIndex",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "owner",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "index",
+        type: "uint256",
+      },
+    ],
+    name: "tokenOfOwnerByIndex",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
         name: "tokenId",
         type: "uint256",
       },
@@ -312,6 +355,19 @@ const _abi = [
         internalType: "string",
         name: "",
         type: "string",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "totalSupply",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
       },
     ],
     stateMutability: "view",
@@ -342,15 +398,15 @@ const _abi = [
   },
 ];
 
-export class ERC721URIStorage__factory {
+export class ERC721Enumerable__factory {
   static readonly abi = _abi;
-  static createInterface(): ERC721URIStorageInterface {
-    return new utils.Interface(_abi) as ERC721URIStorageInterface;
+  static createInterface(): ERC721EnumerableInterface {
+    return new utils.Interface(_abi) as ERC721EnumerableInterface;
   }
   static connect(
     address: string,
     signerOrProvider: Signer | Provider
-  ): ERC721URIStorage {
-    return new Contract(address, _abi, signerOrProvider) as ERC721URIStorage;
+  ): ERC721Enumerable {
+    return new Contract(address, _abi, signerOrProvider) as ERC721Enumerable;
   }
 }
