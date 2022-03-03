@@ -71,6 +71,16 @@ describe("Membership NFT", () => {
         })
       ).to.eventually.be.rejected;
     });
+    it("Fails to mint a token if not paid enough money", async () => {
+      await instance.setIsAllowListActive(true);
+      await instance.setAllowList([customer1.address], 1);
+      /** Customer 1 tries to mint 5 tokens */
+      expect(
+        instance.connect(customer1).mintAllowList(5, {
+          value: ethers.utils.parseEther(".122"),
+        })
+      ).to.eventually.be.rejected;
+    });
     it("Mints the correct number of tokens from allowlist", async () => {
       await instance.setIsAllowListActive(true);
       await instance.setAllowList([customer1.address], 1);
