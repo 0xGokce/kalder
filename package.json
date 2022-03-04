@@ -2,12 +2,15 @@
   "name": "kalder",
   "private": true,
   "scripts": {
-    "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "contracts": "npx waffle && npx hardhat compile",
     "test": "export NODE_ENV=test && mocha",
-    "lint": "next lint"
+    "lint": "next lint",
+    "start-local-db": "docker-compose up -d",
+    "local-db": "npm run start-local-db && DB=local next dev",
+    "staging-db": "sh migrate-staging.sh && DB=staging next dev",
+    "generate-gql-client": "npm run start-local-db && zeus http://localhost:8080/v1/graphql ./utils/generated --ts"
   },
   "dependencies": {
     "@chakra-ui/react": "^1.8.3",
@@ -21,6 +24,8 @@
     "@web3-react/types": "^8.0.10-beta.0",
     "dotenv": "^16.0.0",
     "framer-motion": "^6",
+    "graphql": "^15.8.0",
+    "graphql-zeus": "^4.0.4",
     "magic-sdk": "^8.0.1",
     "next": "^12.1.0",
     "react": "^17.0.2",
@@ -49,6 +54,7 @@
     "hardhat": "^2.9.0",
     "hardhat-ethers": "^1.0.1",
     "hardhat-gas-reporter": "^1.0.8",
+    "hasura-cli": "^2.2.0",
     "mocha": "^7.2.0",
     "solidity-coverage": "^0.7.20",
     "swr": "^1.2.1",
