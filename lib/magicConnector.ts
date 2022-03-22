@@ -1,18 +1,15 @@
-import type { ExternalProvider } from "@ethersproject/providers";
-import { initializeConnector } from "@web3-react/core";
-import type { Actions } from "@web3-react/types";
-import { Connector } from "@web3-react/types";
-import type {
-  LoginWithMagicLinkConfiguration,
-  Magic as MagicInstance,
-  MagicSDKAdditionalConfiguration,
-} from "magic-sdk";
-import { Web3Provider } from "@ethersproject/providers";
-import { Eip1193Bridge } from "@ethersproject/experimental";
-import { Magic } from "magic-sdk";
+/**
+ * Note: This file is pretty much taken directly from web3-react, but has some modifications.
+ * 1. Replaces the chainId and networks with matic-compatible networks
+ */
 
 const chainIdToNetwork: {
-  [key in number]: { rpcUrl: string; chainId: number };
+  [network: number]:
+    | NetworkName
+    | {
+        rpcUrl: string;
+        chainId: number;
+      };
 } = {
   80001: {
     rpcUrl: "https://rpc-mumbai.maticvigil.com/", // Polygon RPC URL
@@ -23,81 +20,151 @@ const chainIdToNetwork: {
     chainId: 137, // Polygon chain id
   },
 };
-export class MagicConnector extends Connector {
-  private readonly options: MagicConnectorArguments;
-  public magic?: MagicInstance;
 
-  constructor(actions: Actions, options: MagicConnectorArguments) {
-    super(actions);
-    this.options = options;
-  }
+import { AbstractConnector } from "@web3-react/abstract-connector";
+import { ConnectorUpdate } from "@web3-react/types";
+import { Magic } from "magic-sdk";
+import invariant from "tiny-invariant";
 
-  private async startListening(
-    configuration: LoginWithMagicLinkConfiguration
-  ): Promise<string | null> {
-    const { apiKey, ...options } = this.options;
+type NetworkName = "mainnet" | "ropsten" | "rinkeby" | "kovan";
 
-    this.magic = new Magic(apiKey, options);
-    let token: string | null = "";
-    try {
-      token = await this.magic.auth.loginWithMagicLink(configuration);
-    } catch (e) {
-      console.error(e);
-    }
+interface MagicConnectorArguments {
+  apiKey: string;
+  chainId: number;
+  email: string;
+}
 
-    const provider = new Web3Provider(
-      this.magic.rpcProvider as unknown as ExternalProvider
-    );
+export const magicConnector = (email: string) =>
+  new MagicConnector({
+    apiKey: process.env.NEXT_PUBLIC_MAGIC_PUBLISHABLE_KEY!,
+    // testMode: process.env.NODE_ENV !== "production",
+    chainId: parseInt(process.env.NEXT_PUBLIC_CHAIN_ID!),
+    email,
+  });
 
-    this.provider = new Eip1193Bridge(provider.getSigner(), provider);
-    return token;
-  }
-
-  /** @ts-ignore */
-  public async activate(
-    configuration: LoginWithMagicLinkConfiguration
-  ): Promise<string | void | null> {
-    this.actions.startActivation();
-
-    const token = await this.startListening(configuration).catch(
-      (error: Error) => {
-        this.actions.reportError(error);
-      }
-    );
-
-    if (this.provider) {
-      await Promise.all([
-        this.provider.request({ method: "eth_chainId" }) as Promise<string>,
-        this.provider.request({ method: "eth_accounts" }) as Promise<string[]>,
-      ])
-        .then(([chainId, accounts]) => {
-          this.actions.update({
-            chainId: Number.parseInt(chainId, 16),
-            accounts,
-          });
-        })
-        .catch((error: Error) => {
-          this.actions.reportError(error);
-        });
-    }
-    return token;
+class UserRejectedRequestError extends Error {
+  public constructor() {
+    super();
+    this.name = this.constructor.name;
+    this.message = "The user rejected the request.";
   }
 }
 
-// making magic easier for us to use with web3-react
-/** @ts-ignore */
-export const magicConnector = initializeConnector<MagicConnector>(
-  (actions) => {
-    return new MagicConnector(actions, {
-      apiKey: process.env.NEXT_PUBLIC_MAGIC_PUBLISHABLE_KEY!,
-      // testMode: process.env.NODE_ENV !== "production",
-      network: chainIdToNetwork[parseInt(process.env.NEXT_PUBLIC_CHAIN_ID!)],
-    });
-  },
-  [parseInt(process.env.NEXT_PUBLIC_CHAIN_ID!)]
-);
+class FailedVerificationError extends Error {
+  public constructor() {
+    super();
+    this.name = this.constructor.name;
+    this.message = "The email verification failed.";
+  }
+}
 
-export interface MagicConnectorArguments
-  extends MagicSDKAdditionalConfiguration {
-  apiKey: string;
+class MagicLinkRateLimitError extends Error {
+  public constructor() {
+    super();
+    this.name = this.constructor.name;
+    this.message = "The Magic rate limit has been reached.";
+  }
+}
+
+class MagicLinkExpiredError extends Error {
+  public constructor() {
+    super();
+    this.name = this.constructor.name;
+    this.message = "The Magic link has expired.";
+  }
+}
+
+class MagicConnector extends AbstractConnector {
+  private readonly apiKey: string;
+  private readonly chainId: number;
+  private readonly email: string;
+
+  public magic!: Magic;
+
+  constructor({ apiKey, chainId, email }: MagicConnectorArguments) {
+    invariant(
+      Object.keys(chainIdToNetwork).includes(chainId.toString()),
+      `Unsupported chainId ${chainId}`
+    );
+    invariant(email && email.includes("@"), `Invalid email: ${email}`);
+    super({ supportedChainIds: [chainId] });
+
+    this.apiKey = apiKey;
+    this.chainId = chainId;
+    this.email = email;
+  }
+
+  public async activate(): Promise<ConnectorUpdate> {
+    const MagicSDK = await import("magic-sdk").then((m) => m?.default ?? m);
+    const { Magic, RPCError, RPCErrorCode } = MagicSDK;
+
+    if (!this.magic) {
+      this.magic = new Magic(this.apiKey, {
+        network: chainIdToNetwork[this.chainId],
+      });
+    }
+
+    const isLoggedIn = await this.magic.user.isLoggedIn();
+    const loggedInEmail = isLoggedIn
+      ? (await this.magic.user.getMetadata()).email
+      : null;
+
+    if (isLoggedIn && loggedInEmail !== this.email) {
+      await this.magic.user.logout();
+    }
+
+    if (!isLoggedIn) {
+      try {
+        const token = await this.magic.auth.loginWithMagicLink({
+          email: this.email,
+        });
+      } catch (err) {
+        if (!(err instanceof RPCError)) {
+          throw err;
+        }
+        if (err.code === RPCErrorCode.MagicLinkFailedVerification) {
+          throw new FailedVerificationError();
+        }
+        if (err.code === RPCErrorCode.MagicLinkExpired) {
+          throw new MagicLinkExpiredError();
+        }
+        if (err.code === RPCErrorCode.MagicLinkRateLimited) {
+          throw new MagicLinkRateLimitError();
+        }
+        // This error gets thrown when users close the login window.
+        // -32603 = JSON-RPC InternalError
+        if (err.code === -32603) {
+          throw new UserRejectedRequestError();
+        }
+      }
+    }
+
+    const provider = this.magic.rpcProvider;
+    const account = await provider
+      .enable()
+      .then((accounts: string[]): string => accounts[0]);
+
+    return { provider, chainId: this.chainId, account };
+  }
+
+  public async getProvider(): Promise<any> {
+    return this.magic.rpcProvider;
+  }
+
+  public async getChainId(): Promise<number | string> {
+    return this.chainId;
+  }
+
+  public async getAccount(): Promise<null | string> {
+    return this.magic.rpcProvider
+      .send("eth_accounts")
+      .then((accounts: string[]): string => accounts[0]);
+  }
+
+  public deactivate() {}
+
+  public async close() {
+    await this.magic.user.logout();
+    this.emitDeactivate();
+  }
 }

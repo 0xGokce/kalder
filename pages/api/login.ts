@@ -2,6 +2,8 @@ import { magicAdmin } from "../../lib/magic";
 import { setLoginSession } from "../../lib/auth";
 import { NextApiHandler } from "next";
 
+/** TODO: add logic to view / verify signature that is optional as a session cookie */
+
 const login: NextApiHandler = async (req, res) => {
   try {
     const didToken = req.headers?.authorization?.substr(7);

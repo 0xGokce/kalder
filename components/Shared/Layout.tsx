@@ -1,7 +1,4 @@
 import Head from "next/head";
-// import "./Layout.scss";
-// import "./index.scss";
-import headerButtons from "../config/headerButtons";
 import Header from "./Header";
 
 type LayoutProps = {
@@ -9,8 +6,6 @@ type LayoutProps = {
 };
 
 const Layout = (props: LayoutProps) => {
-  const appTitle = "Loyal3";
-
   return (
     <div className="Layout">
       <Head>
@@ -18,7 +13,7 @@ const Layout = (props: LayoutProps) => {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta charSet="utf-8" />
       </Head>
-      <Header appTitle={appTitle} headerButtons={headerButtons} />
+      <Header />
       <div className="Content">{props.children}</div>
       {/* <NavBar navButtons={navButtons} /> */}
     </div>
