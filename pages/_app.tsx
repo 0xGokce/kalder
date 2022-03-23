@@ -3,6 +3,25 @@ import "@/styles/globals.css";
 import { Web3ReactProvider } from "@web3-react/core";
 import { ethers } from "ethers";
 import type { AppProps } from "next/app";
+import {
+  ApolloClient,
+  ApolloProvider,
+  InMemoryCache,
+  HttpLink,
+} from "@apollo/client";
+import { useState } from "react";
+
+const createApolloClient = (authToken: string) => {
+  return new ApolloClient({
+    link: new HttpLink({
+      uri: "https://hasura.io/learn/graphql",
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+    }),
+    cache: new InMemoryCache(),
+  });
+};
 
 function getLibrary(provider: any): ethers.providers.Web3Provider {
   const library = new ethers.providers.Web3Provider(provider);
@@ -11,11 +30,16 @@ function getLibrary(provider: any): ethers.providers.Web3Provider {
 }
 
 export default function MyApp({ Component, pageProps }: AppProps) {
+  const [client] = useState(
+    createApolloClient(process.env.HASURA_ADMIN_SECRET!)
+  );
   return (
-    <Web3ReactProvider getLibrary={getLibrary}>
-      <Layout>
-        <Component {...pageProps} />
-      </Layout>
-    </Web3ReactProvider>
+    <ApolloProvider client={client}>
+      <Web3ReactProvider getLibrary={getLibrary}>
+        <Layout>
+          <Component {...pageProps} />
+        </Layout>
+      </Web3ReactProvider>
+    </ApolloProvider>
   );
 }

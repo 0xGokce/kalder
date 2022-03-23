@@ -7,10 +7,10 @@
     "contracts": "npx waffle && npx hardhat compile",
     "test": "export NODE_ENV=test && mocha",
     "lint": "next lint",
-    "start-local-db": "docker-compose up -d",
     "dev": "next dev"
   },
   "dependencies": {
+    "@apollo/client": "^3.5.10",
     "@chakra-ui/react": "^1.8.3",
     "@emotion/react": "^11",
     "@emotion/styled": "^11",
@@ -29,7 +29,6 @@
     "dotenv": "^16.0.0",
     "framer-motion": "^6",
     "graphql": "^15.8.0",
-    "graphql-zeus": "^4.0.4",
     "magic-sdk": "^8.0.1",
     "next": "^12.1.0",
     "react": "^17.0.2",
