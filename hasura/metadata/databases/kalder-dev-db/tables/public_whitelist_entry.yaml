@@ -1,0 +1,10 @@
+table:
+  name: whitelist_entry
+  schema: public
+object_relationships:
+- name: customer
+  using:
+    foreign_key_constraint_on: customer_id
+- name: nft_collection
+  using:
+    foreign_key_constraint_on: nft_collection_id

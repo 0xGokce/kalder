@@ -1,5 +1,6 @@
 version: 3
-endpoint: http://localhost:8080
+endpoint: https://saved-lioness-66.hasura.app
+admin_secret: 7nQfd17f6HxYtv1D8i7D7FRlRiYxS7rroVCoJHPColo12Y5ExDKfwtvva3uSeq9a
 metadata_directory: metadata
 actions:
   kind: synchronous

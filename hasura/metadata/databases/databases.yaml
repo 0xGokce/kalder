@@ -1,1 +1,8 @@
-[]
+- name: kalder-dev-db
+  kind: postgres
+  configuration:
+    connection_info:
+      database_url: postgresql://postgres:rvpf6bROe3M3DtzdmbaK@kalder-dev-db.cpsfwkybsrfc.us-east-1.rds.amazonaws.com:5432/postgres
+      isolation_level: read-committed
+      use_prepared_statements: false
+  tables: "!include kalder-dev-db/tables/tables.yaml"

@@ -1,0 +1,4 @@
+- "!include public_brand.yaml"
+- "!include public_customer.yaml"
+- "!include public_nft_collection.yaml"
+- "!include public_whitelist_entry.yaml"
