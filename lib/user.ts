@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { getLoginSession } from "./auth";
-import { appDB } from "./db";
+// import { appDB } from "./db";
 
 export default async function user(req: NextApiRequest, res: NextApiResponse) {
   const session = await getLoginSession(req);
